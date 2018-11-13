@@ -201,7 +201,7 @@ class Configuration(object):
         self._parse_lists = True
         self._pretty_lists = True
         self._parse_headers = True
-	self._keep_tweets = False
+        self._keep_tweets = False
 
     @property
     def known_context_patterns(self):
