@@ -72,13 +72,13 @@ class OutputFormatter(object):
             txt = self.parser.getText(node)
             if txt:
                 txt = html.unescape(txt)
+                print(node.attrib)
                 if 'class' in node.attrib:
                     if node.tag == 'blockquote' and node.attrib['class'] == 'twitter-tweet':
                         txt = '$tweet_begin$' + txt + '$tweet_end$'
                         txt = re.sub(r'https?:\/\/[^ ]*', '', txt, flags=re.MULTILINE)
                         txt = re.sub(r'pic.twitter[^ ]*', '', txt, flags=re.MULTILINE)
-                        with open('/home/martin/Desktop/tweets.txt','a') as f:
-                            f.write(txt + '\n\n')
+                        print(txt)
                 txt_lis = innerTrim(txt).split(r'\n')
                 txts.extend(txt_lis)
         text = '\n\n'.join(txts)
