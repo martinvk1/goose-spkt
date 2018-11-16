@@ -32,7 +32,6 @@ class TweetsExtractor(BaseExtractor):
                                              tag='blockquote',
                                              attr="class",
                                              value="twitter-tweet")
-
         for i in items:
             for attr in ['gravityScore', 'gravityNodes']:
                 self.parser.delAttribute(i, attr)

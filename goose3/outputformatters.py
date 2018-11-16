@@ -4,16 +4,12 @@ This is a python port of "Goose" orignialy licensed to Gravity.com
 under one or more contributor license agreements.  See the NOTICE file
 distributed with this work for additional information
 regarding copyright ownership.
-
 Python port was written by Xavier Grangier for Recrutae
-
 Gravity.com licenses this file
 to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance
 with the License.  You may obtain a copy of the License at
-
 http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,6 +18,7 @@ limitations under the License.
 """
 
 import html
+import re
 
 from goose3.text import innerTrim
 
@@ -75,6 +72,13 @@ class OutputFormatter(object):
             txt = self.parser.getText(node)
             if txt:
                 txt = html.unescape(txt)
+                if 'class' in node.attrib:
+                    if node.tag == 'blockquote' and node.attrib['class'] == 'twitter-tweet':
+                        txt = '$tweet_begin$' + txt + '$tweet_end$'
+                        txt = re.sub(r'https?:\/\/[^ ]*', '', txt, flags=re.MULTILINE)
+                        txt = re.sub(r'pic.twitter[^ ]*', '', txt, flags=re.MULTILINE)
+                        with open('/home/martin/Desktop/tweets.txt','a') as f:
+                            f.write(txt + '\n\n')
                 txt_lis = innerTrim(txt).split(r'\n')
                 txts.extend(txt_lis)
         text = '\n\n'.join(txts)
@@ -144,14 +148,14 @@ class OutputFormatter(object):
             if ((tag != 'br' or text != '\\r') and stop_words.get_stopword_count() < 3 and
                     len(self.parser.getElementsByTag(elm, tag='object')) == 0 and
                     len(self.parser.getElementsByTag(elm, tag='embed')) == 0):
-                self.parser.remove(elm)
+                if not bool(re.search("—.*\(@.*\).*\d, \d{4}", str(elm.text))): # don't remove tweet author/date
+                    self.parser.remove(elm)
             # TODO
             # check if it is in the right place
             else:
                 trimmed = self.parser.getText(elm)
                 if trimmed.startswith("(") and trimmed.endswith(")"):
                     self.parser.remove(elm)
-
 
 class StandardOutputFormatter(OutputFormatter):
     pass
